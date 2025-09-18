@@ -153,7 +153,7 @@ const Contact = () => {
             </p>
           </div>
         </div>
-        
+
         {/* Background Elements */}
         <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-float"></div>
         <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/10 rounded-full blur-xl animate-float" style={{ animationDelay: '1s' }}></div>
@@ -513,7 +513,7 @@ const Contact = () => {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-white/30 text-red hover:bg-white/60 hover:text-black font-semibold px-8 py-4 h-auto text-lg backdrop-blur-sm"
+                className="border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-4 h-auto text-lg backdrop-blur-sm"
                 asChild
               >
                 <Link to="/features">View Features</Link>
@@ -521,7 +521,7 @@ const Contact = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Background Elements */}
         <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-float"></div>
         <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/10 rounded-full blur-xl animate-float" style={{ animationDelay: '1s' }}></div>
