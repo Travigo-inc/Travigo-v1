@@ -122,28 +122,28 @@ export const createItinerary = asyncHandler(async (req, res) => {
  */
 export const getUserItineraries = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const page = Math.max(1, Number(req.query.page) || 1);
-  const limit = Math.min(50, Number(req.query.limit) || 20);
-  const skip = (page - 1) * limit;
-  const status = req.query.status; // optional status filter
 
-  const filter = { user: userId };
-  if (status) filter.status = status;
+  const itineraries = await Itinerary.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .populate("destination", "name country")
+    .lean();
 
-  const [items, total] = await Promise.all([
-    Itinerary.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate('destination', 'name country')
-      .lean(),
-    Itinerary.countDocuments(filter),
-  ]);
+  const response = itineraries.map((it) => ({
+    id: it._id,
+    title: it.trip_name,
+    destination: Array.isArray(it.destination)
+      ? it.destination.map((d) => d.name).join(", ")
+      : it.destination?.name || "Unknown",
+    startDate: it.start_date,
+    endDate: it.end_date,
+    status: it.status,
+    budget: it.budget,
+    image: "/placeholder.svg", // Default image since it doesn't exist in the model
+    activities: it.daily_plan?.reduce((count, day) => count + (day.activities?.length || 0), 0) || 0,
+    hotels: 0, // Hotels count would need to be calculated from accommodations in daily_plan
+  }));
 
-  return new ApiResponse(200, 'Itineraries fetched', {
-    items,
-    meta: { page, limit, total, pages: Math.ceil(total / limit) },
-  }).send(res);
+  return new ApiResponse(200, "Itineraries fetched successfully", response).send(res);
 });
 
 /**
@@ -342,4 +342,3 @@ export const deleteItinerary = asyncHandler(async (req, res) => {
 
   return new ApiResponse(200, 'Itinerary deleted successfully').send(res);
 });
-

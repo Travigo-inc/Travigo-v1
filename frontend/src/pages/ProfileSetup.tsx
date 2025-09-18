@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -120,10 +121,33 @@ const ProfileSetup = () => {
     }));
   };
 
-  const handleSubmit = () => {
-    // TODO: Save to Supabase when connected
-    console.log("Profile data:", formData);
-    navigate("/dashboard");
+  const handleSubmit = async () => {
+    try {
+      // Structure the data to match the backend user model
+      const profileData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender,
+        phone: formData.phone,
+        preferences: {
+          travelType: formData.travelType,
+          budget: formData.budgetRange,
+          accommodation: formData.accommodation,
+          interests: formData.interests,
+          favoriteDestinations: formData.favoriteDestinations
+        }
+      };
+
+      // Make the API call to update the user profile
+      await authService.updateProfile(profileData);
+      
+      // Navigate to dashboard after successful update
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      // TODO: Add proper error handling (e.g., toast notification)
+    }
   };
 
   const nextStep = () => {

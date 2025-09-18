@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios';
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,60 +23,76 @@ import {
 } from "lucide-react";
 
 const Dashboard = () => {
-  // Mock user data - this would come from Supabase when connected
-  const [user] = useState({
-    name: "Sarah Johnson",
-    email: "sarah@example.com",
-    phone: "+1 (555) 123-4567",
-    avatar: "",
+
+  interface User {
+    _id: string;
+    name: string;
+    email: string;
+    phone: string;
+    avatar?: string;
     preferences: {
-      travelType: "Adventure",
-      budget: "$2000-5000",
-      accommodation: "Hotels",
-      interests: ["Hiking", "Photography", "Local Cuisine"],
-    },
-    kycStatus: "verified",
+      travelType: string;
+      budget?: string;
+      accommodation?: string;
+      interests?: string[];
+    };
+    kycStatus: "pending" | "verified" | "rejected";
+    blockchainId?: string;
+  }
+  
+  interface Itinerary {
+    id: string;
+    title: string;
+    destination: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    budget: number;
+    image?: string;
+    activities?: number;
+    hotels?: number;
+  }
+
+  const [user, setUser] = useState<User | null>(null);
+
+  // Initialize with empty array instead of mock data
+  const [itineraries, setItineraries] = useState<Itinerary[]>([]);
+
+  const api = axios.create({
+    baseURL: "http://localhost:8000/api/v1/", // Default backend URL
+    withCredentials: true, // Important for cookies
   });
 
-  // Mock itineraries data
-  const [itineraries] = useState([
-    {
-      id: 1,
-      title: "European Adventure",
-      destination: "Paris, Rome, Barcelona",
-      startDate: "2024-06-15",
-      endDate: "2024-06-30",
-      status: "confirmed",
-      budget: 4500,
-      image: "/placeholder.svg",
-      activities: 12,
-      hotels: 3,
-    },
-    {
-      id: 2,
-      title: "Tokyo Explorer",
-      destination: "Tokyo, Kyoto, Osaka",
-      startDate: "2024-08-10",
-      endDate: "2024-08-20",
-      status: "planning",
-      budget: 3200,
-      image: "/placeholder.svg",
-      activities: 8,
-      hotels: 2,
-    },
-    {
-      id: 3,
-      title: "Bali Retreat",
-      destination: "Bali, Indonesia",
-      startDate: "2024-10-05",
-      endDate: "2024-10-15",
-      status: "draft",
-      budget: 2800,
-      image: "/placeholder.svg",
-      activities: 6,
-      hotels: 2,
-    },
-  ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch user profile
+        const userRes = await api.get("auth/profile");
+        setUser(userRes.data.data);
+        console.log("Fetched user:", userRes.data);
+
+        // Fetch itineraries for the user
+        const itinRes = await api.get(`itineraries`);
+        
+        // Extract itineraries array from ApiResponse structure
+        const itinerariesData = itinRes.data?.data || itinRes.data || [];
+        
+        // Ensure itineraries is always an array
+        if (Array.isArray(itinerariesData)) {
+          setItineraries(itinerariesData);
+        } else {
+          // If we can't find an array, set to empty array
+          setItineraries([]);
+        }
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+        // Set itineraries to empty array on error
+        setItineraries([]);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -110,7 +127,7 @@ const Dashboard = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold mb-2">
-              Welcome back, {user.name.split(" ")[0]}!
+              Welcome back, {user && user.name ? user.name.split(" ")[0] : "Traveler"}!
             </h1>
             <p className="text-muted-foreground">
               Ready for your next adventure?
@@ -336,18 +353,17 @@ const Dashboard = () => {
                 <CardContent className="space-y-6">
                   <div className="flex items-center space-x-4">
                     <Avatar className="h-20 w-20">
-                      <AvatarImage src={user.avatar} />
+                      <AvatarImage src={user?.avatar} />
                       <AvatarFallback className="bg-primary/10 text-primary text-xl">
-                        {user.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
+                        {user?.name
+                          ? user.name.split(" ").map((n) => n[0]).join("")
+                          : "T"}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <h3 className="text-xl font-bold">{user.name}</h3>
-                      <p className="text-muted-foreground">{user.email}</p>
-                      <p className="text-muted-foreground">{user.phone}</p>
+                      <h3 className="text-xl font-bold">{user?.name}</h3>
+                      <p className="text-muted-foreground">{user?.email}</p>
+                      <p className="text-muted-foreground">{user?.phone}</p>
                     </div>
                   </div>
 
@@ -357,21 +373,21 @@ const Dashboard = () => {
                         Travel Type
                       </label>
                       <p className="font-semibold">
-                        {user.preferences.travelType}
+                        { user?.preferences?.travelType}
                       </p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">
                         Budget Range
                       </label>
-                      <p className="font-semibold">{user.preferences.budget}</p>
+                      <p className="font-semibold">{user?.preferences?.budget}</p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">
                         Accommodation
                       </label>
                       <p className="font-semibold">
-                        {user.preferences.accommodation}
+                        {user?.preferences?.accommodation}
                       </p>
                     </div>
                     <div>
@@ -392,7 +408,7 @@ const Dashboard = () => {
                       Interests
                     </label>
                     <div className="flex flex-wrap gap-2 mt-2">
-                      {user.preferences.interests.map((interest, index) => (
+                      {user?.preferences?.interests.map((interest, index) => (
                         <Badge key={index} variant="secondary">
                           {interest}
                         </Badge>
