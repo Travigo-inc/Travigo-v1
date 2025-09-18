@@ -28,8 +28,8 @@ app.get('/api/v1/auth/healthchecker', (req, res) => {
 });
 
 app.use('/api/v1/auth', authRouter);
-app.use("/api/users", userRoutes);
-app.use("/api/itineraries", itineraryRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/itineraries", itineraryRoutes);
 // app.use("/api/destinations", destinationRoutes);
 
 

@@ -10,7 +10,7 @@ const protect = (async (req, res, next) => {
     req.headers?.authorization?.split(" ")[1]; 
 
   if (!token) {
-    throw new ApiError(401, "Not authorized, no token"); 
+    throw new ApiError("Not authorized, no token", 401); 
   }
 
   // 2. Verify token
@@ -18,19 +18,19 @@ const protect = (async (req, res, next) => {
   try {
     decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
   } catch (err) {
-    throw new ApiError(401, "Not authorized, invalid/expired token");
+    throw new ApiError("Not authorized, invalid/expired token", 401);
   }
 
   const user_id = decoded?.userId;
   if (!user_id) {
-    throw new ApiError(401, "Not authorized, invalid token payload");
+    throw new ApiError("Not authorized, invalid token payload", 401);
   }
 
   // 3. Attach user to request
   req.user = await User.findById(user_id).select("-password -refreshToken"); 
 
   if (!req.user) {
-    throw new ApiError(404, "Not authorized, user not found");
+    throw new ApiError("Not authorized, user not found", 404);
   }
 
   next();

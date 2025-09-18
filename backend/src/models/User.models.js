@@ -8,16 +8,23 @@ const userSchema = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     phone: { type: String, required: true },
-
+    avatar: { type: String }, // URL to avatar image
     preferences: {
-      travelStyle: {
-        type: String,
-        enum: ['luxury', 'budget', 'balanced'],
-        default: 'balanced',
-      },
-      interests: [String], // e.g. ["nature", "foodie", "history"]
+      travelType: { type: String, default: 'Adventure' },
+      budget: { type: String, default: '$1000-3000' },
+      accommodation: { type: String, default: 'Hotels' },
+      interests: [String],
+      favoriteDestinations: [String],
     },
-    
+    firstName: { type: String, default: '' },
+    lastName: { type: String, default: '' },
+    dateOfBirth: { type: Date },
+    gender: { type: String },
+    kycStatus: {
+      type: String,
+      enum: ['pending', 'verified', 'rejected'],
+      default: 'pending',
+    },
     blockchainId: { type: String },
     refreshToken: { type: String }, // needed for refresh
   },
