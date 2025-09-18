@@ -365,9 +365,13 @@ const ItineraryResult = () => {
               Back to Dashboard
             </Button>
           </Link>
-          <Button size="lg" className="travel-button">
+          <Link to="/booking">
+            <Button size="lg" className="travel-button">
             Book This Trip
-          </Button>
+           </Button>
+          </Link>
+          
+
           <Link to="/create-itinerary">
             <Button variant="outline" size="lg">
               Create New Trip

@@ -154,6 +154,8 @@ const Dashboard = () => {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="trips">My Trips</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
+            <Link to='/tracking'><TabsTrigger value="profile">Trip deatils</TabsTrigger></Link>
+
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
