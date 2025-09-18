@@ -7,8 +7,8 @@ const itinerarySchema = new mongoose.Schema(
 
     // Link to the chosen destination (which already has POIs + Accommodations inside it)
     destination: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Destination',
+      type: String,
+      //ref: 'Destination',
       required: true,
     },
 

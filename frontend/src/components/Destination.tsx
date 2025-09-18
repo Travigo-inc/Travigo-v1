@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "react-router-dom";
 import { 
   Star, 
   MapPin, 
@@ -17,7 +18,7 @@ import {
   Utensils,
   Calendar,
   Users,
-  Globe
+  Globe,
 } from "lucide-react";
 import axios from "axios";
 
@@ -288,7 +289,7 @@ const mockDestinations = [
       }
     }
   },
-  
+
 ];
 
 const Destination = () => {
@@ -376,7 +377,7 @@ const Destination = () => {
             </p>
           </div>
         </div>
-        
+
         {/* Background Elements */}
         <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-float"></div>
         <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/10 rounded-full blur-xl animate-float" style={{ animationDelay: '1s' }}></div>
@@ -454,11 +455,11 @@ const Destination = () => {
                                 <span className="font-semibold">{poi.rating}</span>
                               </div>
                             </div>
-                            
+
                             <p className="text-muted-foreground mb-4 leading-relaxed">
                               {poi.description.en}
                             </p>
-                            
+
                             <div className="flex items-center justify-between text-sm">
                               <div className="flex items-center text-muted-foreground">
                                 <Clock className="h-4 w-4 mr-1" />
@@ -494,14 +495,14 @@ const Destination = () => {
                                 </Badge>
                               </div>
                             </div>
-                            
+
                             <div className="flex items-center justify-between mb-4">
                               <div className="text-2xl font-bold text-primary">
                                 ₹{hotel.cost_per_night.toLocaleString()}
                               </div>
                               <div className="text-sm text-muted-foreground">per night</div>
                             </div>
-                            
+
                             <div className="space-y-2">
                               <div className="text-sm font-medium">Amenities:</div>
                               <div className="flex flex-wrap gap-1">
@@ -573,7 +574,7 @@ const Destination = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" className="travel-button">
                   <Plane className="h-5 w-5 mr-2" />
-                  Start Planning
+                  <Link to="/create-itinerary">Start Planning</Link>
                 </Button>
                 <Button variant="outline" size="lg">
                   <Users className="h-5 w-5 mr-2" />
@@ -587,5 +588,4 @@ const Destination = () => {
     </div>
   );
 };
-
 export default Destination;
