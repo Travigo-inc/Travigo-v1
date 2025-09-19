@@ -2,14 +2,18 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun, Menu, X, Plane } from "lucide-react";
+import { useLogout } from "@/services/authService";
 
 interface NavbarProps {
   darkMode: boolean;
   toggleDarkMode: () => void;
+  isLoggedIn: boolean;
+  isDashboard: boolean;
 }
 
-const Navbar = ({ darkMode, toggleDarkMode }: NavbarProps) => {
+const Navbar = ({ darkMode, toggleDarkMode, isLoggedIn, isDashboard }: NavbarProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { logout } = useLogout();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
@@ -66,15 +70,24 @@ const Navbar = ({ darkMode, toggleDarkMode }: NavbarProps) => {
               ) : (
                 <Moon className="h-5 w-5" />
               )}
+              
             </Button>
-            <Link to="/login">
-              <Button variant="ghost">Login</Button>
-            </Link>
-            <Link to="/signup">
-              <Button variant="default" className="travel-button">
-                Get Started
+            {isLoggedIn && isDashboard ? (
+              <Button variant="ghost" onClick={logout}>
+                Logout
               </Button>
-            </Link>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost">Login</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button variant="default" className="travel-button">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -138,16 +151,24 @@ const Navbar = ({ darkMode, toggleDarkMode }: NavbarProps) => {
                 Contact
               </Link>
               <div className="flex flex-col space-y-2 pt-4 border-t border-border/50">
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start">
-                    Login
+                {isLoggedIn && isDashboard ? (
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => { logout(); setMobileMenuOpen(false); }}>
+                    Logout
                   </Button>
-                </Link>
-                <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="default" className="travel-button w-full">
-                    Get Started
-                  </Button>
-                </Link>
+                ) : (
+                  <>
+                    <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full justify-start">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="default" className="travel-button w-full">
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
