@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import ChatBot from "./ChatBot";
+import { authService } from "@/services/authService";
 
 const Layout = () => {
   const [darkMode, setDarkMode] = useState(() => {
@@ -13,6 +14,9 @@ const Layout = () => {
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
+
   useEffect(() => {
     // Update localStorage and document class
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
@@ -23,13 +27,32 @@ const Layout = () => {
     }
   }, [darkMode]);
 
+  useEffect(() => {
+    // Check if user is logged in
+    const checkAuthStatus = async () => {
+      try {
+        await authService.getProfile();
+        setIsLoggedIn(true);
+      } catch (error) {
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, [location]);
+
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-smooth">
-      <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+      <Navbar 
+        darkMode={darkMode} 
+        toggleDarkMode={toggleDarkMode} 
+        isLoggedIn={isLoggedIn}
+        isDashboard={location.pathname === "/dashboard"}
+      />
       <main className="pt-20">
         <Outlet />
       </main>
