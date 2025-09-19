@@ -1,10 +1,5 @@
 // backend/src/services/cerebrasService.js
-/**
- * Service to communicate with Cerebras AI for itinerary generation
- * - Accepts frontend form data
- * - Returns AI-generated itinerary in frontend-ready format
- * - Handles errors and missing fields gracefully
- */
+
 
 import axios from "axios";
 import dotenv from "dotenv";
@@ -18,7 +13,7 @@ const CEREBRAS_API_KEY = process.env.CEREBRAS_API_KEY;
 const AI_MODEL = process.env.AI_MODEL || "llama3.1-8b";
 const MAX_TOKENS = 3000;
 
-// Helper to safely convert strings to ObjectId
+//hlper to conver string to ObjectId
 const safeObjectId = (id) => {
   try {
     return mongoose.Types.ObjectId(id);
@@ -28,7 +23,7 @@ const safeObjectId = (id) => {
 };
 
 /**
- * Calls Cerebras AI to generate an itinerary
+
  * @param {object} formData - Frontend form data + startDate/endDate
  * @returns {object} - AI-generated itinerary in frontend-ready format
  */

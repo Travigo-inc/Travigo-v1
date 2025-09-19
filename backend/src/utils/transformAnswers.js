@@ -1,12 +1,8 @@
 // backend/src/utils/transformAnswers.js
-/**
- * Transforms frontend-ready AI itinerary JSON into MongoDB Mongoose schema
- * Ensures required fields are present
- * Destination is treated as a string instead of ObjectId
- */
+
 
 import { info, warn } from "./logger.js";
-// import mongoose from "mongoose"; // Uncomment if you want ObjectId conversion later
+// import mongoose from "mongoose"; // uncomment if you want ObjectId conversion later
 
 // Helper to safely convert strings to ObjectId (currently unused)
 /*
@@ -34,7 +30,6 @@ export const transformAIResponse = (aiResponse, userId, destination) => {
   if (!userId) throw new Error("User ID is required");
   if (!destination) throw new Error("Destination is required");
 
-  // Top-level mapping
   const transformed = {
     user: userId, // Use ObjectId if needed: safeObjectId(userId)
     destination: destination, // Currently a string; uncomment safeObjectId(destination) if using ObjectId
@@ -66,8 +61,8 @@ export const transformAIResponse = (aiResponse, userId, destination) => {
       const activities =
         Array.isArray(day.activities) && day.activities.length > 0
           ? day.activities.map((act) => ({
-              poi_id: null, // AI doesn’t return DB POIs; set null or resolve later
-              accommodation_id: null, // AI doesn’t return DB accommodations; set null
+              poi_id: null, 
+              accommodation_id: null,
               transport_mode: act.type || "walk",
               notes: act.title || "",
               estimated_cost: act.cost || 0,
