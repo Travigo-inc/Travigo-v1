@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
+import ChatBot from "./ChatBot";
 
 const Layout = () => {
   const [darkMode, setDarkMode] = useState(() => {
@@ -32,6 +33,7 @@ const Layout = () => {
       <main className="pt-20">
         <Outlet />
       </main>
+      <ChatBot />
     </div>
   );
 };

@@ -1,44 +1,84 @@
 // backend/src/controllers/generateItineraryController.js
-/**
- * Controller for AI-generated itineraries using Cerebras AI
- * - Calls AI service
- * - Transforms the response
- * - Saves itinerary to MongoDB
- * - Returns JSON to frontend
- */
-
 import Itinerary from "../models/Itinerary.models.js";
 import { generateItineraryFromAI } from "../services/cerebrasService.js";
 import { transformAIResponse } from "../utils/transformAnswers.js";
 import { info, warn, error } from "../utils/logger.js";
+// import mongoose from "mongoose"; // Uncomment if you want ObjectId conversion later
+
+// Helper to safely convert strings to ObjectId (currently unused)
+/*
+const safeObjectId = (id) => {
+  try {
+    return mongoose.Types.ObjectId(id);
+  } catch {
+    return null;
+  }
+};
+*/
 
 /**
  * POST /api/itineraries/generate
- * Generates itinerary using Cerebras AI and saves to DB
+ * Generates itinerary using Cerebras AI and saves to MongoDB
  */
 export const generateItinerary = async (req, res) => {
   try {
-    const { user, destination, trip_name, start_date, end_date, budget, travel_style } =
-      req.body;
+    const userId = req.user?._id;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized: User ID missing" });
+    }
+
+    const {
+      tripName,
+      destination, // string now
+      startDate,
+      endDate,
+      budget,
+      travelType,
+      duration,
+      activities,
+      accommodation,
+      transportation,
+      specialRequests,
+      travelers,
+    } = req.body;
 
     // Validate required fields
-    if (!user || !destination || !start_date || !end_date) {
+    if (!destination || !startDate || !endDate) {
       warn("Missing required fields for itinerary generation", req.body);
       return res.status(400).json({
-        error: "Required fields missing: user, destination, start_date, end_date",
+        error: "Required fields missing: destination, startDate, endDate",
       });
     }
 
-    info("Starting AI itinerary generation", { user, destination });
+    info("Starting AI itinerary generation", {
+      userId,
+      destination,
+      startDate,
+      endDate,
+    });
 
-    // Prepare input for AI
-    const aiInput = { user, destination, trip_name, start_date, end_date, budget, travel_style };
+    // Prepare AI input payload
+    const aiInput = {
+      tripName: tripName || "My Trip",
+      destination, // sending name string to AI
+      startDate,
+      endDate,
+      totalBudget: Array.isArray(budget) ? budget[0] : budget || 0,
+      duration: duration || 1,
+      travelType: travelType || "balanced",
+      activities: activities || [],
+      accommodation: accommodation || "",
+      transportation: transportation || "",
+      specialRequests: specialRequests || "",
+      travelers: travelers || 1,
+    };
 
     // Call Cerebras AI
     const aiResponse = await generateItineraryFromAI(aiInput);
 
-    // Transform AI response to match Mongoose schema
-    const transformed = transformAIResponse(aiResponse);
+    // Transform AI response into Mongoose schema
+    // If you ever want to use ObjectId for destination, replace 'destination' below with safeObjectId(destination)
+    const transformed = transformAIResponse(aiResponse, userId, destination);
 
     // Save to MongoDB
     const itinerary = new Itinerary(transformed);
@@ -48,7 +88,9 @@ export const generateItinerary = async (req, res) => {
 
     res.status(201).json(itinerary);
   } catch (err) {
-    error("Failed to generate/save AI itinerary", err.message);
-    res.status(500).json({ error: `Itinerary generation failed: ${err.message}` });
+    error("Failed to generate/save AI itinerary", err);
+    res.status(500).json({
+      error: `Itinerary generation failed: ${err.message}`,
+    });
   }
 };
