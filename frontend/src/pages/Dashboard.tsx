@@ -20,6 +20,7 @@ import {
   Camera,
   DollarSign,
   Edit,
+  Navigation,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -55,8 +56,45 @@ const Dashboard = () => {
 
   const [user, setUser] = useState<User | null>(null);
 
-  // Initialize with empty array instead of mock data
-  const [itineraries, setItineraries] = useState<Itinerary[]>([]);
+  // Initialize with dummy data
+  const [itineraries, setItineraries] = useState<Itinerary[]>([
+    {
+      id: "1",
+      title: "Goa Beach Adventure",
+      destination: "Goa, India",
+      startDate: "2025-10-15",
+      endDate: "2025-10-22",
+      status: "confirmed",
+      budget: 15000,
+      image: "goa-beach.jpg",
+      activities: 12,
+      hotels: 3
+    },
+    {
+      id: "2",
+      title: "Shimla Hill Station",
+      destination: "Shimla, India",
+      startDate: "2025-11-05",
+      endDate: "2025-11-12",
+      status: "planning",
+      budget: 25000,
+      image: "shimla-hills.jpg",
+      activities: 8,
+      hotels: 2
+    },
+    {
+      id: "3",
+      title: "Pondicherry Heritage Tour",
+      destination: "Pondicherry, India",
+      startDate: "2025-12-01",
+      endDate: "2025-12-08",
+      status: "draft",
+      budget: 18000,
+      image: "pondicherry-heritage.jpg",
+      activities: 10,
+      hotels: 1
+    }
+  ]);
 
   const api = axios.create({
     baseURL: "http://localhost:8000/api/v1/", // Default backend URL
@@ -79,16 +117,13 @@ const Dashboard = () => {
         console.log("Fetched itineraries:", itinerariesData);
         
         // Ensure itineraries is always an array
-        if (Array.isArray(itinerariesData)) {
+        if (Array.isArray(itinerariesData) && itinerariesData.length > 0) {
           setItineraries(itinerariesData);
-        } else {
-          // If we can't find an array, set to empty array
-          setItineraries([]);
         }
+        // If no itineraries from API, keep the dummy data
       } catch (err) {
         console.error("Dashboard fetch error:", err);
-        // Set itineraries to empty array on error
-        setItineraries([]);
+        // Keep dummy itineraries on error instead of setting to empty array
       }
     };
 
@@ -151,14 +186,13 @@ const Dashboard = () => {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+          <TabsList className="grid w-full grid-cols-4 lg:w-[400px]">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="trips">My Trips</TabsTrigger>
             <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="tracking">
-              <Link to='/tracking'>Trip Details</Link>
+            <TabsTrigger value="tracking" asChild>
+              <Link to="/tracking">Go Live</Link>
             </TabsTrigger>
-
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -455,6 +489,24 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="tracking" className="space-y-6">
+            <Card className="travel-card">
+              <CardContent className="p-12 text-center">
+                <Navigation className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Live Trip Tracking</h3>
+                <p className="text-muted-foreground mb-6">
+                  Click "Go Live" to navigate to the live tracking page where you can monitor your ongoing trips in real-time with location tracking, weather alerts, and activity updates.
+                </p>
+                <Link to="/tracking">
+                  <Button className="travel-button">
+                    <Navigation className="h-4 w-4 mr-2" />
+                    Go to Live Tracking
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
