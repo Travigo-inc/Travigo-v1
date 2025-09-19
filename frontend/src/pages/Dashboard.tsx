@@ -73,9 +73,10 @@ const Dashboard = () => {
 
         // Fetch itineraries for the user
         const itinRes = await api.get(`itineraries`);
-        
+        console.log("Fetched itineraries response:", itinRes.data);
         // Extract itineraries array from ApiResponse structure
-        const itinerariesData = itinRes.data?.data || itinRes.data || [];
+        const itinerariesData = itinRes.data?.data || [];
+        console.log("Fetched itineraries:", itinerariesData);
         
         // Ensure itineraries is always an array
         if (Array.isArray(itinerariesData)) {
