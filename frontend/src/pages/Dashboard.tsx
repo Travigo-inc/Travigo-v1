@@ -184,7 +184,7 @@ const Dashboard = () => {
                       <p className="text-sm text-muted-foreground">
                         Countries Visited
                       </p>
-                      <p className="text-2xl font-bold">12</p>
+                      <p className="text-2xl font-bold">0</p>
                     </div>
                     <Plane className="h-8 w-8 text-primary" />
                   </div>
@@ -197,7 +197,7 @@ const Dashboard = () => {
                       <p className="text-sm text-muted-foreground">
                         Total Savings
                       </p>
-                      <p className="text-2xl font-bold">$2.4K</p>
+                      <p className="text-2xl font-bold">$0.0</p>
                     </div>
                     <DollarSign className="h-8 w-8 text-primary" />
                   </div>
@@ -210,11 +210,14 @@ const Dashboard = () => {
                       <p className="text-sm text-muted-foreground">
                         KYC Status
                       </p>
-                      <p className="text-2xl font-bold text-green-600">
-                        Verified
-                      </p>
+                      {user?.kycStatus==="verified"? <p className="text-2xl font-bold text-green-600">
+                        { user?.kycStatus }
+                      </p> :
+                      <p className="text-2xl font-bold text-yellow-600">
+                        { user?.kycStatus }
+                      </p>}
                     </div>
-                    <CheckCircle className="h-8 w-8 text-green-600" />
+                    {user?.kycStatus==="verified"?<CheckCircle className="h-8 w-8 text-green-600" />:null}
                   </div>
                 </CardContent>
               </Card>
